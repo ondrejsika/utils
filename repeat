@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+
+import argparse
+import binascii
+import subprocess
+
+root_parser = argparse.ArgumentParser()
+root_parser.add_argument('command', nargs=argparse.REMAINDER)
+root_parser.add_argument('-n', '--num-repeats', default=0, type=int)
+root_parser.add_argument('-o', '--output-files')
+
+args = root_parser.parse_args()
+command = ' '.join(args.command)
+
+def main():
+    i = 0
+    while True:
+        if args.output_files:
+            status_code = subprocess.call('%s | tee %s.%s' % (command, args.output_files, i), shell=True)
+        else:
+            statuc_code = subprocess.call(command, shell=True)
+
+        i += 1
+        if i == args.num_repeats:
+            break
+
+try:
+    main()
+except KeyboardInterrupt:
+    quit(1)
+
